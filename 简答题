@@ -1,0 +1,115 @@
+解释 游戏对象（GameObjects） 和 资源（Assets）的区别与联系。
+对象是由各种资源整合而成并且直接出现在游戏中的东西，而资源可以被多个对象利用并构成不同的对象，另外有些资源如预设可作为模板实例化成游戏对象。
+
+下载几个游戏案例，分别总结资源、对象组织的结构
+资源是在一个文件夹下再细分为各种资源文件，如预设，场景，动作，脚本，图片和音乐等
+资源文件，而对象则一般分为玩家，敌人，摄像机等虚拟父类，这些父类本身并不在游戏中真正作为实例出现，他们的子类才是游戏中真正出现的对象，达到分类的效果。
+
+编写一个代码，使用 debug 语句来验证 Monobehaviour 基本行为或事件触发的条件
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class NewBehaviourScript : MonoBehaviour {
+
+	// Use this for initialization
+	void Start () {
+        Debug.Log("i am starting");
+	}
+	
+	// Update is called once per frame
+	void Update () {
+        Debug.Log("i am updating");
+    }
+
+    void Awake()
+    {
+        Debug.Log("i am awaking");
+    }
+
+    void FixedUpdate()
+    {
+        Debug.Log("this is fixupdate");
+    }
+
+    void LateUpdate()
+    {
+        Debug.Log("this is lateUpdate");
+    }
+
+    void OnGUI()
+    {
+        Debug.Log("this is GUI");
+    }
+
+    void OnDisable()
+    {
+        Debug.Log("this is DisAble");
+    }
+    void OnEnable()
+    {
+        Debug.Log("this is EnAble");
+    }
+}
+
+
+一个对象在创建时，经过实践是先 Awake, 再OnEnable, 再Start。
+而Update是每次渲染新的一帧的时候才会调用，FixedUpdate是在固定的时间间隔执行，不受游戏帧率的影响, LateUpdate是紧跟在Update后执行的。而OnGUI是在渲染或处理GUI事件时被调用，即在每一帧都会被调用，但是每一帧可能调用许多次，取决于事件的次数。
+OnDisable则当对象变为不可用或非激活状态时此函数被调用或者当物体被销毁时它将被调用，并且可用于任意清理代码，当脚本编译完成之后被重加载时，OnDisable将被调用，OnEnable在脚本被载入后调用。
+
+查找脚本手册，了解 GameObject，Transform，Component 对象
+分别翻译官方对三个对象的描述（Description）
+GameObject : 所有实体对象的基类
+Component : 所有附加到GameObject的东西的基类
+Transfrom : 所有在页面中的对象都有的，用来存储修改位置，旋转和大小比例，每个Transfrom都可以有parent	， 以便用于设置位置等信息更有层次性。
+
+描述下图中 table 对象（实体）的属性、table 的 Transform 的属性、 table 的 部件
+Table的属性有Transform, Mesh Filter, Box Collider, Mesh Renderer, Transform属性有位置坐标，旋转坐标，和大小比例，部件有chair1, chair2, chair3, chair4
+
+用 UML 图描述 三者的关系
+
+整理相关学习资料，编写简单代码验证以下技术的实现
+查找对象: 
+通过名字查找：public static GameObject Find(string name)
+通过标签查找单个对象：public static GameObject FindWithTag(string tag)
+通过标签查找多个对象：public static GameObject[] FindGameObjectsWithTag(string tag)
+在Child中找对象：public Transform Find(string name);
+
+
+添加子对象：先通过public static GameObect CreatePrimitive(PrimitiveTypetype)创建出一个基本对象，再通过 transform.parent 来添加为子对象
+
+
+遍历对象树
+foreach (Transform child in transform) {
+         
+}
+
+清除所有子对象
+foreach (Transform child in transform) { 
+Destroy(child.gameObject); 
+}
+
+
+
+预设（Prefabs）有什么好处？与对象克隆 (clone or copy or Instantiate of Unity Object) 关系？
+预设和克隆都相当于利用一个原有的模板创建出具有相同属性的新的对象，能够简化我们的代码编写和操作，实现复用性。预设所创建出的对象与预设本身是相关联的，一旦预设属性发生改变，对应的对象也会发生改变，而克隆则是相反，克隆出的对象与本事的对象是没有关联的，克隆本体发生改变，克隆出的对象不会发生变化。
+
+尝试解释组合模式（Composite Pattern / 一种设计模式）。
+组合模式就是让对象间可以建立树型的层次结构，表示出部分和整体的关系，使得用户单个对象和组合对象的使用具有一致性。
+
+使用 BroadcastMessage() 方法向子对象发送消息
+Parent中的函数
+void Start () {
+        this.BroadcastMessage("smile");
+	}
+
+ void smile()
+  {
+      Debug.Log("table is smile");
+   }
+Child中的函数
+void smile()
+{
+     Debug.Log("chair is smile");
+ }
+结果表明，BroadCastMessage函数中广播的方法名，parent和child中的都会被调用
