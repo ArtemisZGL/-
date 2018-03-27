@@ -67,6 +67,7 @@ Transfrom : 所有在页面中的对象都有的，用来存储修改位置，�
 Table的属性有Transform, Mesh Filter, Box Collider, Mesh Renderer, Transform属性有位置坐标，旋转坐标，和大小比例，部件有chair1, chair2, chair3, chair4
 
 用 UML 图描述 三者的关系
+week1/未命名文件.pdf
 
 整理相关学习资料，编写简单代码验证以下技术的实现
 查找对象: 
